@@ -1,0 +1,10 @@
+### service for welcome 
+GET http://localhost:5000/
+
+###
+
+### service , end-point for get an employee record
+GET http://localhost:5000/employee
+
+###
+GET http://localhost:5000/isemployee

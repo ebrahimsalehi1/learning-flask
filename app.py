@@ -1,6 +1,7 @@
 
 from distutils.log import debug
 from flask import Flask
+from flask import render_template
 
 app = Flask(__name__)
 
@@ -15,6 +16,10 @@ def employee():
     }
 
     return employee
+
+@app.route("/isemployee")
+def is_employe():
+    return render_template('index.html')
 
 if __name__=="__main__":
     app.run(debug=True)
