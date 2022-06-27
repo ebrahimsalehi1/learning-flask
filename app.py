@@ -1,8 +1,8 @@
 
-from ast import operator
 from distutils.log import debug
 from flask import Flask
-from flask import render_template
+from flask import render_template,request
+ 
 
 app = Flask(__name__)
 
@@ -38,6 +38,34 @@ def calculate(operation,n1,n2):
         res=n1+n2
                 
     return f"calc - {operation} - {res}"
+
+@app.route('/calculate',methods=['POST'])
+def calculate2():
+    operation = request.args.get("operation")
+    n1 = request.args.get("n1")
+    n2 = request.args.get("n2")
+
+    res=0
+    if operation=='add':
+        res=n1+n2
+
+    print(request.args.get("operation"))
+                
+    return f"calc - {operation} - {res}"
+
+@app.route('/login/<string:user>/<string:password>',methods=['GET','POST'])
+def login(user,password):
+    if request.method=='GET':
+        return render_template('login.html')
+    else:
+        user = request.args.get("user")    
+        password = request.args.get("password")    
+
+        if user=='ebrahim' and password=='1234':
+            return "OK"
+        else:
+            return "Cancel"
+
 
 @app.route('/path/<path:sub_path>')
 def get_path(sub_path):

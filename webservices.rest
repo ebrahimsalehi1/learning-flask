@@ -8,3 +8,12 @@ GET http://localhost:5000/employee
 
 ###
 GET http://localhost:5000/isemployee
+
+###
+
+POST http://localhost:5000/calculate?operation=add&n1=100&n2=200
+
+###
+
+POST http://localhost:5000/login/ebrahim/1234?user=ebrahim&password=1234
+
