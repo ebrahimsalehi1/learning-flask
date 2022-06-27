@@ -35,6 +35,11 @@ def login():
         return jsonify(data['users'])
 
 
+@app.route('/checkUser/<string:userId>',methods=['POST'])
+def checkUser(userId):
+    print(request.json["message"])
+    return "checkUser"
+
 
 with app.test_request_context():
     # print(url_for('isemployee'))

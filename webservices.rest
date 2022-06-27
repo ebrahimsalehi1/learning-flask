@@ -16,3 +16,12 @@ GET http://localhost:5000/login
 ###
 
 POST http://localhost:5000/login
+
+###
+
+POST http://localhost:5000/checkUser/100
+Content-Type: application/json
+
+{
+    "message":"message 1"
+}
