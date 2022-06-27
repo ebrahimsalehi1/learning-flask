@@ -22,29 +22,54 @@ def employee():
 def is_employe():
     return render_template('index.html')
 
-@app.route('/login',methods=['GET','POST'])
-def login():
+@app.route('/employeeList')    
+def employeeList():
+    from make_data import get_data
+    return render_template('index.html',name='qwqw',empList= map(lambda i:i["salary"],get_data()))
+
+@app.route('/user/<string:userName>/<int:password>')
+def get_user(userName,password):
+    return f"user: {userName} - {password}"
+
+@app.route('/calculate/<string:operation>/<float:n1>/<float:n2>')
+def calculate(operation,n1,n2):
+    res=0
+    if operation=='add':
+        res=n1+n2
+                
+    return f"calc - {operation} - {res}"
+
+@app.route('/calculate',methods=['POST'])
+def calculate2():
+    operation = request.args.get("operation")
+    n1 = request.args.get("n1")
+    n2 = request.args.get("n2")
+
+    res=0
+    if operation=='add':
+        res=n1+n2
+
+    print(request.args.get("operation"))
+                
+    return f"calc - {operation} - {res}"
+
+@app.route('/login/<string:user>/<string:password>',methods=['GET','POST'])
+def login(user,password):
     if request.method=='GET':
         return render_template('login.html')
     else:
-        json_file= open('db.json')
-        data=json.load(json_file)
-        json_file.close()
-        print(data['users'])
+        user = request.args.get("user")    
+        password = request.args.get("password")    
 
-        return jsonify(data['users'])
-
-
-@app.route('/checkUser/<string:userId>',methods=['POST'])
-def checkUser(userId):
-    print(request.json["message"])
-    return "checkUser"
+        if user=='ebrahim' and password=='1234':
+            return "OK"
+        else:
+            return "Cancel"
 
 
-with app.test_request_context():
-    # print(url_for('isemployee'))
-    # print(url_for('isemployee',employee_id='100'))
-    print(url_for('index'))
+@app.route('/path/<path:sub_path>')
+def get_path(sub_path):
+    return f"path: {sub_path}"
 
 if __name__=="__main__":
     app.run(debug=True)
