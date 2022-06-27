@@ -8,3 +8,11 @@ GET http://localhost:5000/employee
 
 ###
 GET http://localhost:5000/isemployee
+
+###
+
+GET http://localhost:5000/login
+
+###
+
+POST http://localhost:5000/login
