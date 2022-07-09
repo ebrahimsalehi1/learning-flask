@@ -11,26 +11,38 @@ GET http://localhost:5000/isemployee
 
 ###
 
-<<<<<<< HEAD
-GET http://localhost:5000/login
-
-###
-
-POST http://localhost:5000/login
-
-###
-
-POST http://localhost:5000/checkUser/100
-Content-Type: application/json
-
-{
-    "message":"message 1"
-}
-=======
 POST http://localhost:5000/calculate?operation=add&n1=100&n2=200
 
 ###
 
 POST http://localhost:5000/login/ebrahim/1234?user=ebrahim&password=1234
 
->>>>>>> main
+
+###
+GET  http://localhost:5000/user/
+
+###
+POST http://localhost:5000/user/
+Content-Type: application/json
+
+{
+    "userId": 102,
+    "username": "esi2022",
+    "password": "7890",
+    "firstName": "esmail",
+    "lastName": "salehi",
+    "userType": "student"
+}
+
+###
+PUT http://localhost:5000/user/
+Content-Type: application/json
+
+{
+    "userId": 102,
+    "username": "esi2022",
+    "password": "7890",
+    "firstName": "esmail",
+    "lastName": "salehi",
+    "userType": "student"
+}

@@ -1,10 +1,13 @@
 
 from distutils.log import debug
 from flask import Flask
-from flask import render_template
+from flask import render_template,redirect
 from flask import url_for,request,jsonify,json
+from users import users
 
 app = Flask(__name__)
+
+app.register_blueprint(users,url_prefix="/user")
 
 @app.route("/")
 def index():
@@ -53,8 +56,9 @@ def calculate2():
                 
     return f"calc - {operation} - {res}"
 
-@app.route('/login/<string:user>/<string:password>',methods=['GET','POST'])
-def login(user,password):
+@app.route('/login',methods=['GET','POST'])
+@app.route('/login/<string:user>/<string:password>',methods=['GET','POST'],defaults={'user':None,'password':None})
+def login(user=None,password=None):
     if request.method=='GET':
         return render_template('login.html')
     else:
@@ -66,10 +70,13 @@ def login(user,password):
         else:
             return "Cancel"
 
-
 @app.route('/path/<path:sub_path>')
 def get_path(sub_path):
     return f"path: {sub_path}"
+
+
+
+
 
 if __name__=="__main__":
     app.run(debug=True)
