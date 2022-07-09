@@ -17,3 +17,35 @@ POST http://localhost:5000/calculate?operation=add&n1=100&n2=200
 
 POST http://localhost:5000/login/ebrahim/1234?user=ebrahim&password=1234
 
+###
+GET http://localhost:5000/users
+Content-Type: application/json
+
+###
+GET http://localhost:5000/users/102
+
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+"userId": 102, 
+"firstName": "anisa", 
+"lastName": "hakamiha", 
+"password": "4321", 
+"userType": "student", 
+"username": "anisa"
+}
+
+###
+PUT http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "userId": 102,
+    "username": "ebrahim2000",
+    "password": "12345",
+    "firstName": "ebrahim",
+    "lastName": "salehi",
+    "userType": "teacher"
+}

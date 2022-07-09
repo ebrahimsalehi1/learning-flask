@@ -5,17 +5,22 @@
       "username": "ebrahim2000",
       "password": "1234",
       "firstName": "ebrahim",
-      "lastName": "salehi"
+      "lastName": "salehi",
+      "userType": "teacher"
     },
     {
       "userId": 101,
       "username": "mahsa4321",
       "password": "4321",
       "firstName": "mahsa",
-      "lastName": "hakamiha"
+      "lastName": "hakamiha",
+      "userType": "student"
     }
   ],
-  "userTypes": [],
+  "userTypes": [
+    { "userTypeId": 1, "userType": "teacher" },
+    { "userTypeId": 2, "userType": "student" }
+  ],
   "components": [],
   "useComponents": []
 }
