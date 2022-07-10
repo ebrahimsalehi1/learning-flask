@@ -18,8 +18,8 @@
     }
   ],
   "userTypes": [
-    { "userTypeId": 1, "userType": "student" },
-    { "userTypeId": 1, "userType": "teacher" }
+    { "userTypeId": 1, "userType": "teacher" },
+    { "userTypeId": 2, "userType": "student" }
   ],
   "components": [],
   "useComponents": []

@@ -1,86 +1,64 @@
 
-from distutils.log import debug
 from flask import Flask
-from flask import render_template,redirect
-from flask import url_for,request,jsonify,json
-from users import users
-
+from flask import render_template,request,json,jsonify
+ 
 app = Flask(__name__)
 
-app.register_blueprint(users,url_prefix="/user")
+with open("db.json") as db:
+    data = json.load(db)
 
 @app.route("/")
+@app.route("/home")
 def index():
     return "Hello World !!!"
 
-@app.route("/employee")
-def employee():
-    employee = {
-        "firstName":"ebrahim"
-    }
+@app.route("/users",methods=["GET"])
+def users():  
+    return jsonify(data["users"])      
 
-    return employee
+@app.route("/users",methods=["POST"])
+def user_save():
+    body = request.get_json()
+    data["users"].append(body)
+    return body
 
-@app.route("/isemployee/<employee_id>")
-def is_employe():
-    return render_template('index.html')
+@app.route("/users",methods=["PUT"])
+def user_update():
+    body = request.get_json()
+    arr = data["users"]
+    for i in range(len(arr)):
+        if arr[i]["userId"]==body["userId"]:
+            index=i
+            break
 
-@app.route('/employeeList')    
-def employeeList():
-    from make_data import get_data
-    return render_template('index.html',name='qwqw',empList= map(lambda i:i["salary"],get_data()))
+    data["users"][index]=body
+    print(index)
+    print(data["users"][index])
+    return body
 
-@app.route('/user/<string:userName>/<int:password>')
-def get_user(userName,password):
-    return f"user: {userName} - {password}"
+@app.route("/users/<string:userId>",methods=["GET"])
+def get_by_id(userId):
+    arr = data["users"]
+    userFound = None
+    for item in arr:
+        if str(item["userId"])==str(userId):
+            print(item["userId"])
+            userFound = item
+            break
 
-@app.route('/calculate/<string:operation>/<float:n1>/<float:n2>')
-def calculate(operation,n1,n2):
-    res=0
-    if operation=='add':
-        res=n1+n2
-                
-    return f"calc - {operation} - {res}"
-
-@app.route('/calculate',methods=['POST'])
-def calculate2():
-    operation = request.args.get("operation")
-    n1 = request.args.get("n1")
-    n2 = request.args.get("n2")
-
-    res=0
-    if operation=='add':
-        res=n1+n2
-
-    print(request.args.get("operation"))
-                
-    return f"calc - {operation} - {res}"
-
-@app.route('/login',methods=['GET','POST'])
-@app.route('/login/<string:user>/<string:password>',methods=['GET','POST'],defaults={'user':None,'password':None})
-def login(user=None,password=None):
-    if request.method=='GET':
-        return render_template('login.html')
+    if userFound:
+        return userFound
     else:
-        user = request.args.get("user")    
-        password = request.args.get("password")    
-
-        if user=='ebrahim' and password=='1234':
-            return "OK"
-        else:
-            return "Cancel"
-
-@app.route('/path/<path:sub_path>')
-def get_path(sub_path):
-    return f"path: {sub_path}"
+        return jsonify(None)
 
 
 @app.route('/numpy')
 def py():
     import numpy as np
     res = np.array([1,2,3])
-    print(res)
-    return res
+    # res=np.array([1,2,3],ndmin=3)
+    print(np.arange(9).reshape(1,10))
+    return "using numpy is awesome"
 
 if __name__=="__main__":
     app.run(debug=True)
