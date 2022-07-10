@@ -2,11 +2,11 @@
 from re import I
 from flask import Flask
 from flask import render_template,request,json,jsonify
- 
+from user_repository import read_data
+from user_services import read_service,create_service,delete_service
 app = Flask(__name__)
 
-with open("db.json") as db:
-    data = json.load(db)
+data = read_data()
 
 @app.route("/")
 @app.route("/home")
@@ -15,13 +15,12 @@ def index():
 
 @app.route("/users",methods=["GET"])
 def users():  
-    return jsonify(data["users"])      
+    return read_service(data["users"])
 
 @app.route("/users",methods=["POST"])
 def user_save():
     body = request.get_json()
-    data["users"].append(body)
-    return body
+    return create_service(users_list=data["users"],user=body)
 
 @app.route("/users",methods=["PUT"])
 def user_update():
@@ -51,6 +50,10 @@ def get_by_id(userId):
         return userFound
     else:
         return jsonify(None)
+
+@app.route('/users/<int:user_id>',methods=["DELETE"])
+def delete_user(user_id):
+    return delete_service(users_list=data["users"],user_id=user_id)
 
 if __name__=="__main__":
     app.run(debug=True)

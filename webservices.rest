@@ -21,7 +21,7 @@ POST http://localhost:5000/login/ebrahim/1234?user=ebrahim&password=1234
 GET http://localhost:5000/users
 Content-Type: application/json
 
-###
+###5
 GET http://localhost:5000/users/102
 
 ###
@@ -49,3 +49,7 @@ Content-Type: application/json
     "lastName": "salehi",
     "userType": "teacher"
 }
+
+###
+
+DELETE http://localhost:5000/users/101
