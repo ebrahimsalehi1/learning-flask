@@ -75,8 +75,12 @@ def get_path(sub_path):
     return f"path: {sub_path}"
 
 
-
-
+@app.route('/numpy')
+def py():
+    import numpy as np
+    res = np.array([1,2,3])
+    print(res)
+    return res
 
 if __name__=="__main__":
     app.run(debug=True)

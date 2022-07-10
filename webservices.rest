@@ -46,3 +46,7 @@ Content-Type: application/json
     "lastName": "salehi",
     "userType": "student"
 }
+
+
+###
+GET http://localhost:5000/numpy/

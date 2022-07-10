@@ -21,7 +21,7 @@ def use_save():
 @users.route("/",methods=["PUT"])
 def use_update():
     body = request.get_json()
-    index = i for i in range(data["users"]) if data["users"]["userId"]==body.userId
+    # index = i for i in range(data["users"]) if data["users"]["userId"]==body.userId
     # data["users"]
     return body
 
