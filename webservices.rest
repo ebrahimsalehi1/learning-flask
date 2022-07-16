@@ -25,7 +25,20 @@ Content-Type: application/json
 GET http://localhost:5000/users/102
 
 ###
-POST http://localhost:5000/users
+POST http://localhost:5000/users/save
+Content-Type: application/json
+
+{
+"userId": 102, 
+"firstName": "anisa", 
+"lastName": "hakamiha", 
+"password": "4321", 
+"userType": "Teacher5353", 
+"username": "anisa"
+}
+
+###
+POST http://localhost:5000/users/test
 Content-Type: application/json
 
 {
