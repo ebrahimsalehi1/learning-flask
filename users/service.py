@@ -1,5 +1,9 @@
 from flask import jsonify
 
+
+def read_service_base(users_list):
+    return users_list    
+
 def read_service(users_list):
     return jsonify(users_list)      
 
