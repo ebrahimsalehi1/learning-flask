@@ -66,3 +66,17 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:5000/users/101
+
+### adduser
+
+POST http://localhost:5000/adduser
+Content-Type: application/json
+
+{
+    "userId": 102,
+    "username": "ebrahim2000",
+    "password": "12345",
+    "firstName": "ebrahim",
+    "lastName": "salehi",
+    "userType": "teacher"
+}
