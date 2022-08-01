@@ -74,9 +74,31 @@ Content-Type: application/json
 
 {
     "userId": 102,
-    "username": "ebrahim2000",
-    "password": "12345",
-    "firstName": "ebrahim",
-    "lastName": "salehi",
-    "userType": "teacher"
+    "username": "maryam",
+    "password": "654321",
+    "firstName": "maryam",
+    "lastName": "zahraei",
+    "userType": "student"
 }
+
+### get users
+
+GET http://localhost:5000/getusers
+
+
+### edit user
+
+PUT http://localhost:5000/edituser
+Content-Type: application/json
+
+{
+    "id": 4,
+    "username": "maryam",
+    "password": "0000",
+    "firstName": "maryam",
+    "lastName": "zahraei",
+    "userType": "student"
+}
+
+###
+DELETE http://localhost:5000/deleteuser/4
