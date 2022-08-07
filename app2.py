@@ -1,11 +1,13 @@
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydb.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 class User(db.Model):
     id=db.Column("user_id",db.Integer,primary_key=True)
     user_name = db.Column(db.String(50),unique=True)
@@ -29,6 +31,13 @@ class User(db.Model):
         "last_name":self.last_name,
         "user_type":self.user_type
         }
+
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id','user_name','first_name','last_name','password')
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
 
 @app.route('/adduser',methods=['POST'])
 def add_user():
@@ -72,6 +81,18 @@ def get_users():
 
     return jsonify(str_result)
 
+@app.route('/getusers2')
+def get_users2():
+    all_users = User.query.all()
+    result =users_schema.dump(all_users)
+
+    return jsonify(result)
+
+@app.route('/getuser/<user_id>')
+def get_users_by_id(user_id):
+    found_user = User.query.get(user_id)
+    result = user_schema.dump(found_user)
+    return jsonify(result)
 
 @app.route('/edituser',methods=['PUT'])
 def edit_user():
@@ -79,6 +100,7 @@ def edit_user():
         body = request.get_json()
 
         user_obj = {
+            "id":body['id'],
             "user_name":body['username'],
             "password" :body['password'],
             "first_name":body['firstName'],
@@ -86,7 +108,34 @@ def edit_user():
             "user_type":body['userType']
         }
 
-        new_user = User(user_obj['user_name'],user_obj['password'],user_obj['first_name'],user_obj['last_name'],user_obj['user_type'])        
+        # new_user = User(user_obj['user_name'],user_obj['password'],user_obj['first_name'],user_obj['last_name'],user_obj['user_type'])        
+        found_user = User.query.get(user_obj['id'])
+        # print(found_user.password)
+        found_user.password=user_obj['password']
+        db.session.commit()
+
+        return user_obj,200
+
+    except Exception as ex:
+        print(ex)
+        codes = 100
+
+        return {"message":str(ex)},417
+
+
+@app.route('/change-pass',methods=['PUT'])
+def change_pass():
+    try:
+        body = request.get_json()
+
+        user_obj = {
+            "user_name":body['username'],
+            "password" :body['password']
+        }
+
+        found_user = User.query.filter_by(user_name=user_obj['user_name']).first()
+        print(found_user)
+        found_user.password=user_obj['password']
         db.session.commit()
 
         return user_obj,200
