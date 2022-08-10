@@ -8,20 +8,41 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+
+class UserType(db.Model):
+    __tablename__='user_type'
+    id=db.Column("user_type_id",db.String,primary_key=True)
+    title = db.Column(db.String,unique=True)
+    # users = db.relationship('user')
+
+    def __init__(self,id,title):
+        self.id=id
+        self.title=title
+
+class Gender(db.Model):
+    id=db.Column("gender_id",db.String,primary_key=True)
+    title = db.Column(db.String,unique=True)
+    # users = db.relationship('user')
+
+    def __init__(self,gender_id,gender_title):
+        self.id=gender_id
+        self.title=gender_title
 class User(db.Model):
     id=db.Column("user_id",db.Integer,primary_key=True)
     user_name = db.Column(db.String(50),unique=True)
     password = db.Column(db.String(12),nullable=False)
     first_name = db.Column(db.String(50),nullable=False)
     last_name = db.Column(db.String(50),nullable=False)
-    user_type = db.Column(db.String(50),nullable=False)
+    user_type = db.Column(db.String(50),db.ForeignKey('user_type.user_type_id'),nullable=False,)
+    gender_id = db.Column(db.String,db.ForeignKey('gender.gender_id'))
 
-    def __init__(self,user_name,password,first_name,last_name,user_type):
+    def __init__(self,user_name,password,first_name,last_name,user_type,gender_id):
         self.user_name=user_name
         self.password=password
         self.first_name=first_name
         self.last_name=last_name
         self.user_type=user_type
+        self.gender_id=gender_id
 
     def get_json(self):
         return {
