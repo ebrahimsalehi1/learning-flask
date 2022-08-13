@@ -119,3 +119,10 @@ Content-Type: application/json
     "username": "maryam",
     "password": "001100"
 }
+
+
+### change password
+
+GET http://localhost:5000/getuser?id=1&username=ebrahim01
+Content-Type: application/json
+

@@ -1,3 +1,4 @@
+from linecache import lazycache
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -9,39 +10,36 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-class UserType(db.Model):
-    __tablename__='user_type'
-    id=db.Column("user_type_id",db.String,primary_key=True)
+class Usertype(db.Model):
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     title = db.Column(db.String,unique=True)
-    # users = db.relationship('user')
+    users = db.relationship('User',backref='usertype',lazy=True)
 
-    def __init__(self,id,title):
-        self.id=id
+    def __init__(self,title):
         self.title=title
 
 class Gender(db.Model):
-    id=db.Column("gender_id",db.String,primary_key=True)
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     title = db.Column(db.String,unique=True)
-    # users = db.relationship('user')
+    users = db.relationship('User',backref='gender',lazy=True)
 
-    def __init__(self,gender_id,gender_title):
-        self.id=gender_id
-        self.title=gender_title
+    def __init__(self,title):
+        self.title=title
 class User(db.Model):
-    id=db.Column("user_id",db.Integer,primary_key=True)
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
     user_name = db.Column(db.String(50),unique=True)
     password = db.Column(db.String(12),nullable=False)
     first_name = db.Column(db.String(50),nullable=False)
     last_name = db.Column(db.String(50),nullable=False)
-    user_type = db.Column(db.String(50),db.ForeignKey('user_type.user_type_id'),nullable=False,)
-    gender_id = db.Column(db.String,db.ForeignKey('gender.gender_id'))
+    usertype_id = db.Column(db.Integer,db.ForeignKey('usertype.id'))
+    gender_id = db.Column(db.Integer,db.ForeignKey('gender.id'))
 
-    def __init__(self,user_name,password,first_name,last_name,user_type,gender_id):
+    def __init__(self,user_name,password,first_name,last_name,usertype_id,gender_id):
         self.user_name=user_name
         self.password=password
         self.first_name=first_name
         self.last_name=last_name
-        self.user_type=user_type
+        self.usertype_id=usertype_id
         self.gender_id=gender_id
 
     def get_json(self):
@@ -114,6 +112,27 @@ def get_users_by_id(user_id):
     found_user = User.query.get(user_id)
     result = user_schema.dump(found_user)
     return jsonify(result)
+
+@app.route('/getuser')
+def get_users_by_query_id():
+
+    try:
+        p_user_id = request.args.get('id')
+    except:
+        p_user_id = ''
+
+    try:
+        p_user_name = request.args.get('username')
+    except:
+        p_user_name=''
+
+    user_list = db.session.query(User).filter_by(id=p_user_id,user_name=p_user_name).all()
+    
+    if len(user_list)>0:
+        result = users_schema.dump(user_list)
+        return jsonify(result) 
+    else:   
+        return {},404
 
 @app.route('/edituser',methods=['PUT'])
 def edit_user():
