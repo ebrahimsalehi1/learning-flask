@@ -51,6 +51,11 @@ class User(db.Model):
         "user_type":self.user_type
         }
 
+    @property
+    def first_name_search(self):
+        return self.first_name.upper()
+       
+
 class UserSchema(ma.Schema):
     class Meta:
         fields = ('id','user_name','first_name','last_name','password')
@@ -110,8 +115,23 @@ def get_users2():
 @app.route('/getuser/<user_id>')
 def get_users_by_id(user_id):
     found_user = User.query.get(user_id)
+    print(found_user.first_name,found_user.first_name_search)
     result = user_schema.dump(found_user)
     return jsonify(result)
+
+@app.route('/getusers/<user_full_name>')
+def get_users_list(user_full_name):
+    where = ( User.last_name.like(user_full_name+'%')  or
+             User.first_name.like(user_full_name+'%') 
+            )
+    user_list = db.session.query(User).filter(where).all()
+    
+    if len(user_list)>0:
+        result = users_schema.dump(user_list)
+        return jsonify(result) 
+    else:   
+        return {},404
+
 
 @app.route('/getuser')
 def get_users_by_query_id():
@@ -121,12 +141,26 @@ def get_users_by_query_id():
     except:
         p_user_id = ''
 
+
     try:
         p_user_name = request.args.get('username')
     except:
         p_user_name=''
 
-    user_list = db.session.query(User).filter_by(id=p_user_id,user_name=p_user_name).all()
+    try:
+        p_first_name = request.args['first_name']
+    except:
+        p_first_name=''
+
+
+    where = (
+             (not p_user_id or User.id==p_user_id) and 
+             (not p_user_name or User.user_name==p_user_name) and
+             (not p_first_name or User.first_name==p_first_name.capitalize())
+             )
+    print(p_user_id,p_user_name,where)
+
+    user_list = db.session.query(User).filter(where).all()
     
     if len(user_list)>0:
         result = users_schema.dump(user_list)
