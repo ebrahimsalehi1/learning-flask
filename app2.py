@@ -2,6 +2,7 @@ from linecache import lazycache
 from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from sqlalchemy import func,case,desc,asc
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydb.db'
@@ -33,6 +34,8 @@ class User(db.Model):
     last_name = db.Column(db.String(50),nullable=False)
     usertype_id = db.Column(db.Integer,db.ForeignKey('usertype.id'))
     gender_id = db.Column(db.Integer,db.ForeignKey('gender.id'))
+    full_name = db.column_property(first_name+' '+last_name)
+    gender_percent = db.column_property(case([(gender_id==1,1.25),(gender_id==2,1.15)]))
 
     def __init__(self,user_name,password,first_name,last_name,usertype_id,gender_id):
         self.user_name=user_name
@@ -58,7 +61,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id','user_name','first_name','last_name','password')
+        fields = ('id','user_name','first_name','last_name','password','full_name','gender_percent')
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -141,7 +144,6 @@ def get_users_by_query_id():
     except:
         p_user_id = ''
 
-
     try:
         p_user_name = request.args.get('username')
     except:
@@ -156,15 +158,24 @@ def get_users_by_query_id():
     where = (
              (not p_user_id or User.id==p_user_id) and 
              (not p_user_name or User.user_name==p_user_name) and
-             (not p_first_name or User.first_name==p_first_name.capitalize())
+             (not p_first_name or func.upper(User.first_name)==p_first_name.upper())
              )
-    print(p_user_id,p_user_name,where)
-
-    user_list = db.session.query(User).filter(where).all()
     
+    user_list = db.session. \
+                    query(User.user_name,User.full_name,User.gender_percent).\
+                    filter(where).\
+                        order_by(asc("gender_id"),desc("first_name"))\
+                            .all()
+    
+    # user_count = len(db.session.query(User).all())
+
+    user_count_result= db.session.query(func.count(User.id)).first()
+    user_count=user_count_result[0] if len(user_count_result)>0 else 0
+    # print(user_count)
+
     if len(user_list)>0:
         result = users_schema.dump(user_list)
-        return jsonify(result) 
+        return jsonify({'totalElements':user_count,'elements':result}) 
     else:   
         return {},404
 
