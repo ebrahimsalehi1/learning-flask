@@ -1,4 +1,5 @@
 from app2 import db,User,Gender,Usertype
+from sqlalchemy import func
 
 try:
     db.session.query(Gender).delete()
@@ -26,10 +27,10 @@ except Exception as ex:
 try:
     db.session.query(User).delete()
 
-    db.session.add(User(user_name='ebrahim01',password='1234',first_name='Ebrahim',last_name='Salehi',usertype_id=1,gender_id=2))
-    db.session.add(User(user_name='mahsa02',password='5678',first_name='Mahsa',last_name='Hakamiha',usertype_id=2,gender_id=1))
-    db.session.add(User(user_name='anisa03',password='5678',first_name='Anisa',last_name='Hakamiha',usertype_id=2,gender_id=1))
-    db.session.add(User(user_name='maryam04',password='5678',first_name='Maryam',last_name='Maryami',usertype_id=2,gender_id=1))
+    db.session.add(User(user_name='ebrahim01',password='1234',first_name='Ebrahim',last_name='Salehi',birth_date=func.date('1979-03-23'),usertype_id=1,gender_id=2))
+    db.session.add(User(user_name='mahsa02',password='5678',first_name='Mahsa',last_name='Hakamiha',birth_date=func.date('1988-03-23'),usertype_id=2,gender_id=1))
+    db.session.add(User(user_name='anisa03',password='5678',first_name='Anisa',last_name='Hakamiha',birth_date=func.date('2017-03-23'),usertype_id=2,gender_id=1))
+    db.session.add(User(user_name='maryam04',password='5678',first_name='Maryam',last_name='Maryami',birth_date=func.date('2000-03-23'),usertype_id=2,gender_id=1))
     
     db.session.commit()
 except Exception as ex:
