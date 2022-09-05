@@ -3,6 +3,7 @@ from flask import Flask,request,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy import func,case,desc,asc
+import datetime as dt
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydb.db'
@@ -32,16 +33,19 @@ class User(db.Model):
     password = db.Column(db.String(12),nullable=False)
     first_name = db.Column(db.String(50),nullable=False)
     last_name = db.Column(db.String(50),nullable=False)
+    birth_date = db.Column(db.Date,nullable=True)
     usertype_id = db.Column(db.Integer,db.ForeignKey('usertype.id'))
     gender_id = db.Column(db.Integer,db.ForeignKey('gender.id'))
     full_name = db.column_property(first_name+' '+last_name)
     gender_percent = db.column_property(case([(gender_id==1,1.25),(gender_id==2,1.15)]))
+    birth_month = db.column_property(func.extract('month',birth_date))
 
-    def __init__(self,user_name,password,first_name,last_name,usertype_id,gender_id):
+    def __init__(self,user_name,password,first_name,last_name,birth_date,usertype_id,gender_id):
         self.user_name=user_name
         self.password=password
         self.first_name=first_name
         self.last_name=last_name
+        self.birth_date=birth_date
         self.usertype_id=usertype_id
         self.gender_id=gender_id
 
@@ -61,7 +65,7 @@ class User(db.Model):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id','user_name','first_name','last_name','password','full_name','gender_percent')
+        fields = ('id','user_name','first_name','last_name','password','full_name','gender_percent','birth_month')
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -154,15 +158,25 @@ def get_users_by_query_id():
     except:
         p_first_name=''
 
+    try:
+        p_birth_date = request.args['birth_date'] #dt.datetime.strptime(str(request.args['birth_date']), "%Y-%m-%d").date() 
+        p_birth_year = p_birth_date[0:4]
+        p_birth_month = p_birth_date[5:7]
+    except:
+        p_birth_date=''
+        p_birth_year=''
+        p_birth_month=''
 
+    # func.extract('year',User.birth_date)==p_birth_year and
     where = (
              (not p_user_id or User.id==p_user_id) and 
              (not p_user_name or User.user_name==p_user_name) and
-             (not p_first_name or func.upper(User.first_name)==p_first_name.upper())
+             (not p_first_name or func.upper(User.first_name)==p_first_name.upper()) and
+             (not p_birth_date or User.birth_month==p_birth_month)
              )
     
     user_list = db.session. \
-                    query(User.user_name,User.full_name,User.gender_percent).\
+                    query(User.user_name,User.full_name,User.gender_percent,User.birth_month).\
                     filter(where).\
                         order_by(asc("gender_id"),desc("first_name"))\
                             .all()
