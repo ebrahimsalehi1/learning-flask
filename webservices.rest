@@ -123,9 +123,11 @@ Content-Type: application/json
 
 ### change password
 
-GET http://localhost:5000/getuser?first_name=mAHsa
-Content-Type: application/json
 
 
 ###
 GET http://localhost:5000/getusers/ma
+
+###
+GET http://localhost:5000/getuser?birth_date=2000-03
+Content-Type: application/json
