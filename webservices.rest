@@ -129,5 +129,5 @@ Content-Type: application/json
 GET http://localhost:5000/getusers/ma
 
 ###
-GET http://localhost:5000/getuser?birth_date=2000-03
+GET http://localhost:5000/getuser?birth_date=2000-03&page=0&size=2
 Content-Type: application/json

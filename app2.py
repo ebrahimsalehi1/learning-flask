@@ -158,6 +158,18 @@ def get_users_by_query_id():
     except:
         p_first_name=''
 
+
+    try:
+        page = int(request.args['page'])
+    except:
+        page=''
+
+    try:
+        size = int(request.args['size'])
+    except:
+        size=''
+
+    # print(page,size)
     try:
         p_birth_date = request.args['birth_date'] #dt.datetime.strptime(str(request.args['birth_date']), "%Y-%m-%d").date() 
         p_birth_year = p_birth_date[0:4]
@@ -179,6 +191,8 @@ def get_users_by_query_id():
                     query(User.user_name,User.full_name,User.gender_percent,User.birth_month).\
                     filter(where).\
                         order_by(asc("gender_id"),desc("first_name"))\
+                            .offset(page*size)\
+                            .limit(size)\
                             .all()
     
     # user_count = len(db.session.query(User).all())
