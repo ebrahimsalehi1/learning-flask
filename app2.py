@@ -1,5 +1,4 @@
-from linecache import lazycache
-from flask import Flask,request,jsonify
+from flask import Flask,request,jsonify,render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from sqlalchemy import func,case,desc,asc
@@ -39,6 +38,7 @@ class User(db.Model):
     full_name = db.column_property(first_name+' '+last_name)
     gender_percent = db.column_property(case([(gender_id==1,1.25),(gender_id==2,1.15)]))
     birth_month = db.column_property(func.extract('month',birth_date))
+    image = db.Column(db.BLOB)
 
     def __init__(self,user_name,password,first_name,last_name,birth_date,usertype_id,gender_id):
         self.user_name=user_name
@@ -272,8 +272,28 @@ def delete_user(user_id):
         print(ex)
         return {"message":str(ex)},404
 
+@app.route('/upload/<user_id>',methods=['GET','POST'])
+def upload(user_id):
+    found_user = db.session.query(User).filter(User.id==user_id).first()
+    if not found_user:
+        return {"result":"Not Found"}
+
+    if request.method=='GET':
+        return render_template('index.html')
+
+    elif request.method=='POST':
+        uploaded_file = request.files['filename']
+        found_user.image = uploaded_file.read()
+        db.session.commit()
+        return "POST is done"    
+
+@app.route('/user/image/<user_id>')  
+def show_user_image(user_id):
+    found_user = db.session.query(User).filter(User.id==user_id).first()
+    if not found_user:
+        return {"result":"Not Found"}     
+
+    return found_user.image
+
 if __name__=='__main__':
-    db.create_all()
-
-
     app.run(debug=True)
