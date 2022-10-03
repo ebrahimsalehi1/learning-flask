@@ -21,11 +21,24 @@ POST http://localhost:5000/login/ebrahim/1234?user=ebrahim&password=1234
 GET http://localhost:5000/users
 Content-Type: application/json
 
-###
+###5
 GET http://localhost:5000/users/102
 
 ###
-POST http://localhost:5000/users
+POST http://localhost:5000/users/save
+Content-Type: application/json
+
+{
+"userId": 102, 
+"firstName": "anisa", 
+"lastName": "hakamiha", 
+"password": "4321", 
+"userType": "Teacher5353", 
+"username": "anisa"
+}
+
+###
+POST http://localhost:5000/users/test
 Content-Type: application/json
 
 {
@@ -51,5 +64,73 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:5000/numpy
- 
+
+DELETE http://localhost:5000/users/101
+
+### adduser
+
+POST http://localhost:5000/adduser
+Content-Type: application/json
+
+{
+    "userId": 102,
+    "username": "maryam",
+    "password": "654321",
+    "firstName": "maryam",
+    "lastName": "zahraei",
+    "userType": "student"
+}
+
+### get users
+
+GET http://localhost:5000/getusers
+
+
+### edit user
+
+PUT http://localhost:5000/edituser
+Content-Type: application/json
+
+{
+    "id": 4,
+    "username": "maryam",
+    "password": "0000",
+    "firstName": "maryam",
+    "lastName": "zahraei",
+    "userType": "student"
+}
+
+###
+DELETE http://localhost:5000/deleteuser/4
+
+###
+GET http://localhost:5000/getuser/4
+
+###
+GET http://localhost:5000/getusers2
+
+
+### change password
+
+PUT http://localhost:5000/change-pass
+Content-Type: application/json
+
+{
+    "username": "maryam",
+    "password": "001100"
+}
+
+
+### change password
+
+
+
+###
+GET http://localhost:5000/getusers/ma
+
+###
+GET http://localhost:5000/getuser?birth_date=2000-03&page=0&size=2
+Content-Type: application/json
+
+###
+GET http://localhost:5000//user/image/1

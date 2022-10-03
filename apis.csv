@@ -1,0 +1,4 @@
+table name,GET,POST,PUT,DELETE
+User,True,True,True,True
+Usertype,True,False,False,False
+Gender,True,False,False,False
