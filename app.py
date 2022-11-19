@@ -2,11 +2,13 @@
 from flask import Flask
 from  flask_mysqldb import MySQL
 app = Flask(__name__)
+from dotenv import load_dotenv
+import os
 
-app.config['MYSQL_USER']='sql7564630'
-app.config['MYSQL_PASSWORD']='niEecw6hk1'
-app.config['MYSQL_HOST']='sql7.freemysqlhosting.net'
-app.config['MYSQL_DB']='sql7564630'
+app.config['MYSQL_USER']=os.getenv('MYSQL_USERNAME')
+app.config['MYSQL_PASSWORD']=os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_HOST']=os.getenv('MYSQL_SERVER')
+app.config['MYSQL_DB']=os.getenv('MYSQL_DB_NAME')
 # app.config['MYSQL_CURSORCLASS']='DictCursor'
 
 

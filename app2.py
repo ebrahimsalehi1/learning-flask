@@ -4,9 +4,11 @@ from flask_marshmallow import Marshmallow
 from sqlalchemy import func,case,desc,asc
 import datetime as dt
 from flask_migrate import Migrate
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///mydb.db'
+app.config['SQLALCHEMY_DATABASE_URI']=os.genenv('SQLITE_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
