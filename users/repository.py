@@ -1,7 +1,7 @@
 from flask import json
 
 def read_data():
-    with open("db.json") as db:
+    with open("./sampledata/db.json") as db:
         data = json.load(db)
 
     return data

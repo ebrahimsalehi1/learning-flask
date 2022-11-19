@@ -1,80 +1,12 @@
-from flask import Flask,request,jsonify,render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from sqlalchemy import func,case,desc,asc
-import datetime as dt
-from flask_migrate import Migrate
-from dotenv import load_dotenv
-import os
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']=os.genenv('SQLITE_DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from flask import request,jsonify
+from init import app,users_schema,user_schema,db
+from model.user import User
+from service.user import add_new_user,get_users
 
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
-migrate = Migrate(app,db)
-
-class Usertype(db.Model):
-    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    title = db.Column(db.String,unique=True)
-    users = db.relationship('User',backref='usertype',lazy=True)
-
-    def __init__(self,title):
-        self.title=title
-
-class Gender(db.Model):
-    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    title = db.Column(db.String,unique=True)
-    users = db.relationship('User',backref='gender',lazy=True)
-
-    def __init__(self,title):
-        self.title=title
-class User(db.Model):
-    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    user_name = db.Column(db.String(50),unique=True)
-    password = db.Column(db.String(12),nullable=False)
-    first_name = db.Column(db.String(50),nullable=False)
-    last_name = db.Column(db.String(50),nullable=False)
-    birth_date = db.Column(db.Date,nullable=True)
-    usertype_id = db.Column(db.Integer,db.ForeignKey('usertype.id'))
-    gender_id = db.Column(db.Integer,db.ForeignKey('gender.id'))
-    # eye_color = db.Column(db.String(30))
-    full_name = db.column_property(first_name+' '+last_name)
-    gender_percent = db.column_property(case([(gender_id==1,1.25),(gender_id==2,1.15)]))
-    birth_month = db.column_property(func.extract('month',birth_date))
-    image = db.Column(db.BLOB)
-
-    def __init__(self,user_name,password,first_name,last_name,birth_date,usertype_id,gender_id):
-        self.user_name=user_name
-        self.password=password
-        self.first_name=first_name
-        self.last_name=last_name
-        self.birth_date=birth_date
-        self.usertype_id=usertype_id
-        self.gender_id=gender_id
-        # self.eye_color=eye_color
-
-    def get_json(self):
-        return {
-        "user_name":self.user_name,
-        # "password":self.password,
-        "first_name":self.first_name,
-        "last_name":self.last_name,
-        "user_type":self.user_type
-        }
-
-    @property
-    def first_name_search(self):
-        return self.first_name.upper()
-       
-
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('id','user_name','first_name','last_name','password','full_name','gender_percent','birth_month')
-
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
+@app.route('/test')
+def test():
+    return "TEST"
 
 @app.route('/adduser',methods=['POST'])
 def add_user():
@@ -89,10 +21,7 @@ def add_user():
             "user_type":body['userType']
         }
 
-        new_user = User(user_obj['user_name'],user_obj['password'],user_obj['first_name'],user_obj['last_name'],user_obj['user_type'])
-        print(new_user.id)
-        db.session.add(new_user)
-        db.session.commit()
+        add_new_user(user_obj)
 
         return user_obj,200
 
@@ -104,19 +33,8 @@ def add_user():
 
 @app.route('/getusers')
 def get_users():
-    all_users = User.query.all()
-    str_result ='['
-    i=0
-    for user in all_users:
-        str_result = str_result+str(user.get_json())
-        if i<len(all_users)-1:
-            str_result=str_result+","
+    return jsonify(get_users())
 
-        i=i+1
-
-    str_result=str_result+']'
-
-    return jsonify(str_result)
 
 @app.route('/getusers2')
 def get_users2():
@@ -131,6 +49,7 @@ def get_users_by_id(user_id):
     print(found_user.first_name,found_user.first_name_search)
     result = user_schema.dump(found_user)
     return jsonify(result)
+
 
 @app.route('/getusers/<user_full_name>')
 def get_users_list(user_full_name):
@@ -278,20 +197,6 @@ def delete_user(user_id):
         print(ex)
         return {"message":str(ex)},404
 
-@app.route('/upload/<user_id>',methods=['GET','POST'])
-def upload(user_id):
-    found_user = db.session.query(User).filter(User.id==user_id).first()
-    if not found_user:
-        return {"result":"Not Found"}
-
-    if request.method=='GET':
-        return render_template('index.html')
-
-    elif request.method=='POST':
-        uploaded_file = request.files['filename']
-        found_user.image = uploaded_file.read()
-        db.session.commit()
-        return "POST is done"    
 
 @app.route('/user/image/<user_id>')  
 def show_user_image(user_id):
@@ -300,6 +205,3 @@ def show_user_image(user_id):
         return {"result":"Not Found"}     
 
     return found_user.image
-
-if __name__=='__main__':
-    app.run(debug=True)

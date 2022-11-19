@@ -1,4 +1,7 @@
-from app2 import db,User,Gender,Usertype
+from init import db
+from model.user import User
+from model.gender import Gender
+from model.user_type import Usertype
 from sqlalchemy import func
 
 try:
@@ -22,7 +25,6 @@ try:
 except Exception as ex:
     print(ex)
     db.session.rollback()
-
 
 try:
     db.session.query(User).delete()
