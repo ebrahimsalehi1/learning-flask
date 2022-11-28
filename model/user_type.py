@@ -1,5 +1,5 @@
 from sqlalchemy import func,case,desc,asc
-from app import db
+from app2 import db
 
 class Usertype(db.Model):
     id=db.Column(db.Integer,primary_key=True,autoincrement=True)

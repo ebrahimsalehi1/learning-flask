@@ -13,10 +13,13 @@ if os.getenv('GENERAL_DB_TYPE') == 'SQLITE':
     app.config['SQLALCHEMY_DATABASE_URI']=os.getenv('SQLITE_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 elif os.getenv('GENERAL_DB_TYPE') == 'MYSQL':
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['MYSQL_USER']=os.getenv('MYSQL_USERNAME')
     app.config['MYSQL_PASSWORD']=os.getenv('MYSQL_PASSWORD')
     app.config['MYSQL_HOST']=os.getenv('MYSQL_SERVER')
     app.config['MYSQL_DB']=os.getenv('MYSQL_DB_NAME')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+     
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
